@@ -36,7 +36,8 @@ gulp.task('build-html-dev', function () {
         'demo/js/**/*.js',
         '!demo/js/**/*.min.js',
         'demo/css/**/*.css'
-    ], { read: false });
+    ], { read: false }).pipe($.naturalSort());
+
     return target
         .pipe($.inject(sources, { relative: true }))
         .pipe($.rename('index.html'))
