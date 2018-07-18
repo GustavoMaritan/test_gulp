@@ -2,12 +2,22 @@ const gulp = require('gulp');
 const $ = require('gulp-load-plugins')({ pattern: '*' });
 const path = require('path');
 const rr = require('rimraf');
+const { exec } = require('child_process');
 
-gulp.task('build-clean', function () {
+gulp.task('build-clean', () => {
     return new Promise((resolve) => {
         rr(path.join(__dirname, 'demo'), () => { resolve() });
     })
 });
+
+gulp.task('start-app', () => {
+    exec('node app.js', (err) => {
+        if (err) return console.log('Erro ao executar aplicação.', err);
+        console.log('RODANDO');
+    });
+});
+
+
 ///AMBIENTES
 //DEV
 gulp.task('build-js-dev', () => {
@@ -21,21 +31,22 @@ gulp.task('build-sass-dev', () => {
         .pipe(gulp.dest('demo/css'));
 });
 gulp.task('build-html-dev', function () {
-    var target = gulp.src('src/index.template.html');
+    var target = gulp.src('demo/index.template.html');
     var sources = gulp.src([
         'demo/js/**/*.js',
         '!demo/js/**/*.min.js',
         'demo/css/**/*.css'
     ], { read: false });
     return target
-        .pipe($.inject(sources))
+        .pipe($.inject(sources, { relative: true }))
         .pipe($.rename('index.html'))
         .pipe(gulp.dest('demo'));
 });
 gulp.task('sequence:dev', (callback) => {
-    $.runSequence('build-clean',
+    $.runSequence(//'build-clean',
         ['build-js-dev', 'build-sass-dev'],
         'build-html-dev',
+        'start-app',
         callback
     );
 });
@@ -71,6 +82,8 @@ gulp.task('build-html-prod', function () {
     return target
         .pipe($.inject(sources))
         .pipe($.rename('index.html'))
+        .pipe($.removeHtmlComments())
+        .pipe($.htmlmin({ collapseWhitespace: false }))
         .pipe(gulp.dest('demo'));
 });
 gulp.task('go:prod', (callback) => {

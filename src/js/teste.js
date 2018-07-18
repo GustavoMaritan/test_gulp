@@ -2,6 +2,6 @@ function teste() {
     console.log('SOCA A MURISSOCA')
 }
 
-var mur = 'miguel gayzao';
-var reduzindovariavelgrandona = 'Alicate';
+let mur = 'miguel gayzao';
+let reduzindovariavelgrandona = 'Alicate';
 let oiiiiieeeee = 'tabs';
